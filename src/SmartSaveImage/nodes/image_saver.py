@@ -213,6 +213,7 @@ class SmartImageSaver:
                 return {"ui": {}, "result": (images,)}
         
         # 确定保存路径
+        print(f"[SmartImageSaver] 接收到的folder_path: '{folder_path}' (类型: {type(folder_path)})")
         if not folder_path:
             folder_path = folder_paths.get_output_directory()
             print(f"[SmartImageSaver] 文件夹路径为空，使用默认输出目录: {folder_path}")
@@ -313,7 +314,7 @@ class SmartImageSaver:
             # 保存并预览
             result["ui"] = {"images": saved_images}
         elif preview_mode == "save_only":
-            # 仅保存，不显示预览
-            result["ui"] = {"images": saved_images} if saved_images else {}
+            # 仅保存，不显示预览 - 不返回images避免显示预览
+            result["ui"] = {}
         
         return result

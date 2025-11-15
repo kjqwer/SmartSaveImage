@@ -82,43 +82,22 @@ class SmartFolderManager:
                 }),
                 
                 # 种子信息
-                "seed_source": (["manual", "external"], {
-                    "default": "manual",
-                    "tooltip": "种子来源：manual=手动输入，external=外部输入"
-                }),
-                "manual_seed": ("INT", {
-                    "default": 0, 
-                    "min": 0, 
-                    "max": 0xffffffffffffffff,
-                    "tooltip": "手动设置种子值"
-                }),
-                "seed_input": ("INT", {
-                    "default": 0,
-                    "min": 0,
-                    "max": 0xffffffffffffffff,
-                    "tooltip": "从外部节点输入种子"
+                "seed": ("STRING", {
+                    "default": "0", 
+                    "multiline": False,
+                    "tooltip": "种子值（手动输入或连接外部节点）"
                 }),
                 
                 # 提示词信息
-                "prompt_source": (["manual", "external"], {
-                    "default": "manual", 
-                    "tooltip": "提示词来源：manual=手动输入，external=外部输入"
-                }),
-                "manual_prompt": ("STRING", {
+                "positive_prompt": ("STRING", {
                     "default": "", 
                     "multiline": True,
-                    "tooltip": "手动输入正向提示词"
+                    "tooltip": "正向提示词（手动输入或连接外部节点）"
                 }),
-                "manual_negative_prompt": ("STRING", {
+                "negative_prompt": ("STRING", {
                     "default": "", 
                     "multiline": True,
-                    "tooltip": "手动输入负向提示词"
-                }),
-                "conditioning_positive": ("CONDITIONING", {
-                    "tooltip": "从正向条件节点输入（仅在prompt_source=external时生效）"
-                }),
-                "conditioning_negative": ("CONDITIONING", {
-                    "tooltip": "从负向条件节点输入（仅在prompt_source=external时生效）"
+                    "tooltip": "负向提示词（手动输入或连接外部节点）"
                 }),
                 
                 # 自定义路径
@@ -155,9 +134,7 @@ class SmartFolderManager:
                      enable_seed_folder=True, enable_prompt_folder=False, enable_custom_folder=False,
                      date_format="yyyy-MM-dd", include_time=False,
                      model_source="auto", manual_model_name=None, model_input=None,
-                     seed_source="manual", manual_seed=0, seed_input=0,
-                     prompt_source="manual", manual_prompt="", manual_negative_prompt="",
-                     conditioning_positive=None, conditioning_negative=None,
+                     seed="0", positive_prompt="", negative_prompt="",
                      custom_subfolder="", model_short_name=True, prompt_max_length=50, sanitize_names=True,
                      prompt=None, extra_pnginfo=None):
         """生成文件夹路径和元数据"""
@@ -172,8 +149,8 @@ class SmartFolderManager:
             date_format = "yyyy-MM-dd"
         
         # 清理输入字符串
-        manual_prompt = self.validator.sanitize_input_string(manual_prompt, prompt_max_length * 2)
-        manual_negative_prompt = self.validator.sanitize_input_string(manual_negative_prompt, prompt_max_length * 2)
+        positive_prompt = self.validator.sanitize_input_string(positive_prompt, prompt_max_length * 2)
+        negative_prompt = self.validator.sanitize_input_string(negative_prompt, prompt_max_length * 2)
         custom_subfolder = self.validator.sanitize_input_string(custom_subfolder, 100)
         
         # 从图片中提取尺寸信息
@@ -218,21 +195,11 @@ class SmartFolderManager:
                 final_metadata["model"] = workflow_metadata.get("model")
         
         # 种子信息
-        if seed_source == "manual":
-            final_metadata["seed"] = manual_seed
-        else:  # external
-            final_metadata["seed"] = seed_input
+        final_metadata["seed"] = seed
         
         # 提示词信息
-        if prompt_source == "manual":
-            final_metadata["positive_prompt"] = manual_prompt if manual_prompt.strip() else None
-            final_metadata["negative_prompt"] = manual_negative_prompt if manual_negative_prompt.strip() else None
-        else:  # external
-            # 从conditioning输入提取（这里暂时标记有输入，具体文本仍需要从工作流获取）
-            if conditioning_positive is not None:
-                final_metadata["has_positive_conditioning"] = True
-            if conditioning_negative is not None:
-                final_metadata["has_negative_conditioning"] = True
+        final_metadata["positive_prompt"] = positive_prompt if positive_prompt.strip() else None
+        final_metadata["negative_prompt"] = negative_prompt if negative_prompt.strip() else None
         
         # 尺寸信息（直接从图片获取）
         final_metadata["width"] = image_metadata.get("width", 0)
@@ -256,7 +223,7 @@ class SmartFolderManager:
             path_segments.append(model_name)
         
         if enable_seed_folder and final_metadata.get("seed") is not None:
-            seed_str = f"seed_{final_metadata['seed']}"
+            seed_str = f"seed_{final_metadata['seed']}" 
             path_segments.append(seed_str)
         
         if enable_prompt_folder and final_metadata.get("positive_prompt"):
@@ -295,11 +262,10 @@ class SmartFolderManager:
             "date_format": date_format,
             "include_time": include_time,
             "model_source": model_source,
-            "seed_source": seed_source,
-            "prompt_source": prompt_source,
             "manual_model_name": manual_model_name,
-            "manual_seed": manual_seed,
-            "manual_prompt": manual_prompt,
+            "seed": seed,
+            "positive_prompt": positive_prompt,
+            "negative_prompt": negative_prompt,
             "custom_subfolder": custom_subfolder,
         }
         
@@ -311,20 +277,60 @@ class SmartFolderManager:
         return (images, folder_path, metadata_json)
     
     def extract_model_from_input(self, model_input):
-        """从模型输入中提取模型名称（简化版）"""
+        """从模型输入中提取模型名称（增强版）"""
         if model_input is None:
             return None
         
         try:
-            # 尝试多种方式提取模型名称
-            if hasattr(model_input, 'model_path'):
-                return model_input.model_path
-            elif hasattr(model_input, 'model') and hasattr(model_input.model, 'model_path'):
-                return model_input.model.model_path
-            elif isinstance(model_input, dict):
+            # 检查ModelPatcher的关键属性
+            key_attrs = ['model_path', 'checkpoint_path', 'ckpt_path', 'model_file', 'filename']
+            for attr in key_attrs:
+                if hasattr(model_input, attr):
+                    value = getattr(model_input, attr)
+                    if value:
+                        return value
+            
+            # 尝试从ModelPatcher的特殊属性中提取信息
+            # 检查model_options（可能包含模型信息）
+            if hasattr(model_input, 'model_options') and model_input.model_options:
+                if isinstance(model_input.model_options, dict):
+                    for key in ['model_path', 'checkpoint_path', 'filename']:
+                        if key in model_input.model_options:
+                            value = model_input.model_options[key]
+                            if value:
+                                return value
+            
+            # 检查attachments（可能包含模型信息）
+            if hasattr(model_input, 'attachments') and model_input.attachments:
+                if isinstance(model_input.attachments, dict):
+                    for key, value in model_input.attachments.items():
+                        if isinstance(value, str) and ('.safetensors' in value or '.ckpt' in value):
+                            return value
+            
+            # 最后的尝试：检查parent属性
+            if hasattr(model_input, 'parent') and model_input.parent:
+                parent_model = self.extract_model_from_input(model_input.parent)
+                if parent_model:
+                    return parent_model
+            
+            # 字典格式
+            if isinstance(model_input, dict):
                 return model_input.get('model_path') or model_input.get('checkpoint_path')
+            
+            # 尝试其他可能的属性名
+            possible_attrs = ['checkpoint_path', 'ckpt_path', 'model_file', 'filename', 'path']
+            for attr in possible_attrs:
+                if hasattr(model_input, attr):
+                    value = getattr(model_input, attr)
+                    if value:
+                        return value
+            
+            # 如果是tuple或list，检查第一个元素
+            if isinstance(model_input, (tuple, list)) and len(model_input) > 0:
+                return self.extract_model_from_input(model_input[0])
+            
         except Exception as e:
-            print(f"[SmartFolderManager] 从模型输入提取名称失败: {e}")
+            pass  # 静默处理错误
         
         return None
     
