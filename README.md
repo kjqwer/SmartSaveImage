@@ -1,6 +1,30 @@
 # SmartSaveImage - 智能图片保存节点
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![ComfyUI](https://img.shields.io/badge/ComfyUI-Compatible-green.svg)](https://github.com/comfyanonymous/ComfyUI)
+
 一个功能强大的ComfyUI自定义节点包，提供智能的文件夹管理和图片保存功能。
+
+## 🚀 安装
+
+### 方法一：通过ComfyUI Manager安装（推荐）
+1. 打开ComfyUI Manager
+2. 搜索 "SmartSaveImage"
+3. 点击安装
+
+### 方法二：手动安装
+```bash
+cd ComfyUI/custom_nodes
+git clone https://github.com/kjqwer/SmartSaveImage.git
+cd SmartSaveImage
+pip install -r requirements.txt
+```
+
+### 方法三：下载ZIP
+1. 下载本仓库的ZIP文件
+2. 解压到 `ComfyUI/custom_nodes/` 目录
+3. 重启ComfyUI
 
 ## 🌟 主要特性
 
