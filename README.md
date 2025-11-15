@@ -1,67 +1,185 @@
-# SmartSaveImage
+# SmartSaveImage - 智能图片保存节点
 
-A node for easy save
+一个功能强大的ComfyUI自定义节点包，提供智能的文件夹管理和图片保存功能。
 
-> [!NOTE]
-> This projected was created with a [cookiecutter](https://github.com/Comfy-Org/cookiecutter-comfy-extension) template. It helps you start writing custom nodes without worrying about the Python setup.
+## 🌟 主要特性
 
-## Quickstart
+- **智能文件夹管理** - 自动创建有组织的文件夹结构
+- **灵活的保存选项** - 支持多种图片格式和质量设置
+- **元数据嵌入** - 自动提取并保存工作流信息
+- **批量处理** - 高效处理多张图片
+- **用户友好** - 直观的界面和丰富的选项
 
-1. Install [ComfyUI](https://docs.comfy.org/get_started).
-1. Install [ComfyUI-Manager](https://github.com/ltdrdata/ComfyUI-Manager)
-1. Look up this extension in ComfyUI-Manager. If you are installing manually, clone this repository under `ComfyUI/custom_nodes`.
-1. Restart ComfyUI.
+## 📦 节点介绍
 
-# Features
+### 智能文件夹管理器 (SmartFolderManager)
+负责创建和管理文件夹结构，从工作流中自动提取元数据。
 
-- A list of features
+### 智能图片保存器 (SmartImageSaver)  
+负责保存图片，支持多种格式、压缩选项和元数据嵌入。
 
-## Develop
+## 🚀 快速开始
 
-To install the dev dependencies and pre-commit (will run the ruff hook), do:
+### 基本使用流程
 
-```bash
-cd SmartSaveImage
-pip install -e .[dev]
-pre-commit install
-```
+1. **添加智能文件夹管理器节点**
+   - 在ComfyUI中搜索"智能文件夹管理器"
+   - 将要保存的图片连接到管理器的images输入
 
-The `-e` flag above will result in a "live" install, in the sense that any changes you make to your node extension will automatically be picked up the next time you run ComfyUI.
+2. **配置文件夹结构**
+   - 使用开关控制各层文件夹：日期、模型、种子、提示词、自定义
+   - 设置基础文件夹路径
+   - 可选择连接外部节点（模型、条件、潜在空间）获取更多信息
 
-## Publish to Github
+3. **添加智能图片保存器节点**
+   - 搜索"智能图片保存器"
+   - 将文件夹管理器的三个输出全部连接到保存器：
+     - images → images
+     - folder_path → folder_path  
+     - metadata_json → metadata_json
 
-Install Github Desktop or follow these [instructions](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent) for ssh.
+4. **配置保存选项**
+   - 选择文件格式和质量设置
+   - 设置文件名和预览模式
 
-1. Create a Github repository that matches the directory name. 
-2. Push the files to Git
-```
-git add .
-git commit -m "project scaffolding"
-git push
-``` 
+## 📁 文件夹结构配置
 
-## Writing custom nodes
+### 灵活的层级控制
+现在可以通过开关独立控制每一层文件夹的创建：
 
-An example custom node is located in [node.py](src/SmartSaveImage/nodes.py). To learn more, read the [docs](https://docs.comfy.org/essentials/custom_node_overview).
+- **日期文件夹** (`enable_date_folder`)
+  - 按日期组织：`2024-11-15/`
+  - 可自定义格式：`yyyy-MM-dd`, `yyyy/MM/dd` 等
+  - 可选择包含时间：`2024-11-15_14-30-25/`
 
+- **模型文件夹** (`enable_model_folder`)  
+  - 按模型组织：`sdxl_base/`
+  - 自动从工作流提取模型名称
+  - 支持手动指定或从模型节点输入
 
-## Tests
+- **种子文件夹** (`enable_seed_folder`)
+  - 按种子组织：`seed_12345/`
+  - 自动从工作流提取种子值
+  - 支持手动设置种子
 
-This repo contains unit tests written in Pytest in the `tests/` directory. It is recommended to unit test your custom node.
+- **提示词文件夹** (`enable_prompt_folder`)
+  - 按提示词组织：`beautiful_landscape/`
+  - 可设置最大长度，自动清理非法字符
+  - 支持手动输入或从条件节点获取
 
-- [build-pipeline.yml](.github/workflows/build-pipeline.yml) will run pytest and linter on any open PRs
-- [validate.yml](.github/workflows/validate.yml) will run [node-diff](https://github.com/Comfy-Org/node-diff) to check for breaking changes
+- **自定义文件夹** (`enable_custom_folder`)
+  - 完全自定义：`my_project/`
+  - 可以是任意文件夹名称
 
-## Publishing to Registry
+### 组合示例
+- 全开：`2024-11-15/sdxl_base/seed_12345/beautiful_landscape/my_project/`
+- 仅日期+模型：`2024-11-15/sdxl_base/`
+- 仅种子+自定义：`seed_12345/experiment_01/`
 
-If you wish to share this custom node with others in the community, you can publish it to the registry. We've already auto-populated some fields in `pyproject.toml` under `tool.comfy`, but please double-check that they are correct.
+## 🖼️ 图片保存选项
 
-You need to make an account on https://registry.comfy.org and create an API key token.
+### 文件格式支持
+- **PNG** - 无损压缩，支持透明度
+- **JPEG** - 有损压缩，文件较小
+- **WebP** - 现代格式，支持无损和有损
+- **BMP** - 位图格式
+- **TIFF** - 高质量格式
 
-- [ ] Go to the [registry](https://registry.comfy.org). Login and create a publisher id (everything after the `@` sign on your registry profile). 
-- [ ] Add the publisher id into the pyproject.toml file.
-- [ ] Create an api key on the Registry for publishing from Github. [Instructions](https://docs.comfy.org/registry/publishing#create-an-api-key-for-publishing).
-- [ ] Add it to your Github Repository Secrets as `REGISTRY_ACCESS_TOKEN`.
+### 质量设置
+- **JPEG质量**：1-100（推荐95）
+- **WebP质量**：1-100（推荐90）
+- **WebP无损**：启用无损压缩
+- **PNG压缩**：0-9级别（推荐6）
 
-A Github action will run on every git push. You can also run the Github action manually. Full instructions [here](https://docs.comfy.org/registry/publishing). Join our [discord](https://discord.com/invite/comfyorg) if you have any questions!
+### 文件命名选项
+- **文件名前缀**：自定义前缀
+- **添加时间戳**：在文件名中包含时间
+- **添加计数器**：批量保存时的序号
+- **计数器设置**：起始值和位数
 
+## 🔧 高级功能
+
+### 智能元数据获取
+- **外部节点优先**：连接外部节点时优先从节点获取信息
+- **工作流自动提取**：没有外部输入时从工作流中自动提取
+- **图片尺寸检测**：直接从图片数据中获取准确尺寸
+- **手动补充**：仅在需要时手动输入补充信息
+
+### 元数据嵌入
+- **参数记录**：保存采样器、CFG、步数等技术参数
+- **工作流保存**：可选择嵌入完整工作流信息
+- **多格式支持**：PNG使用PngInfo，JPEG/WebP使用EXIF
+
+### 预览模式
+- **保存并预览**：保存文件同时在界面显示
+- **仅预览**：只在界面显示，不保存文件
+- **仅保存**：只保存文件，不显示预览
+
+### 文件管理
+- **覆盖保护**：避免意外覆盖现有文件
+- **自动重命名**：文件冲突时自动生成新名称
+- **备份功能**：覆盖前创建备份文件
+
+## 💡 使用技巧
+
+### 推荐工作流设置
+
+1. **日常使用**
+   - 开启：日期文件夹 + 模型文件夹
+   - 文件格式：PNG（质量优先）或WebP（体积优先）
+   - 预览模式：保存并预览
+
+2. **批量实验**
+   - 开启：日期文件夹 + 种子文件夹 + 自定义文件夹
+   - 启用计数器，使用描述性前缀
+   - 考虑JPEG格式节省空间
+
+3. **项目管理**
+   - 开启：自定义文件夹（项目名）+ 模型文件夹 + 种子文件夹
+   - 手动设置模型和种子确保一致性
+   - 嵌入完整元数据便于追溯
+
+4. **连接外部节点获取准确信息**
+   - 将CheckpointLoader的MODEL输出连接到model_input
+   - 将CLIPTextEncode的CONDITIONING连接到conditioning_positive/negative
+   - 将KSampler的LATENT输出连接到latent_input
+   - 连接后会优先使用外部节点的信息，无需手动选择模型
+
+### 文件夹路径设置
+
+- **相对路径**：基于ComfyUI输出目录
+  - `output` 或留空 → 默认输出目录
+  - `my_project` → `ComfyUI/output/my_project/`
+
+- **绝对路径**：指定完整路径
+  - `D:/AI_Images/` → 直接保存到指定位置
+
+### 元数据利用
+
+生成的图片会包含丰富的元数据信息：
+- 在图片查看器中可以看到生成参数
+- 便于后续复现相同效果
+- 支持批量分析和管理
+
+## ⚠️ 注意事项
+
+1. **路径权限**：确保ComfyUI对目标文件夹有写入权限
+2. **文件名长度**：避免过长的文件名（建议<200字符）
+3. **特殊字符**：文件名会自动清理非法字符
+4. **磁盘空间**：注意监控存储空间，特别是使用无损格式时
+
+## 🔄 更新日志
+
+### v0.1.0
+- 重新设计的模块化架构
+- 改进的元数据提取功能
+- 更灵活的文件夹管理选项
+- 增强的错误处理和用户反馈
+
+## 🤝 支持与反馈
+
+如果遇到问题或有改进建议，欢迎反馈！
+
+---
+
+*享受更智能的图片保存体验！* 🎨
