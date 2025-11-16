@@ -24,103 +24,103 @@ class SmartFolderManager:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "images": ("IMAGE", {"tooltip": "输入图片，用于提取尺寸信息并传递给保存节点"}),
+                "images": ("IMAGE", {"tooltip": "Input images for extracting size info and passing to save node"}),
                 "base_folder": ("STRING", {
                     "default": "output", 
                     "multiline": False,
-                    "tooltip": "基础文件夹路径，可以是相对路径或绝对路径"
+                    "tooltip": "Base folder path, can be relative or absolute path"
                 }),
                 "create_subfolders": ("BOOLEAN", {
                     "default": True,
-                    "tooltip": "是否自动创建子文件夹"
+                    "tooltip": "Whether to automatically create subfolders"
                 }),
             },
             "optional": {
                 # 文件夹层级开关
                 "enable_date_folder": ("BOOLEAN", {
                     "default": True,
-                    "tooltip": "是否创建日期文件夹"
+                    "tooltip": "Whether to create date folder"
                 }),
                 "enable_model_folder": ("BOOLEAN", {
                     "default": True,
-                    "tooltip": "是否创建模型文件夹"
+                    "tooltip": "Whether to create model folder"
                 }),
                 "enable_seed_folder": ("BOOLEAN", {
                     "default": True,
-                    "tooltip": "是否创建种子文件夹"
+                    "tooltip": "Whether to create seed folder"
                 }),
                 "enable_prompt_folder": ("BOOLEAN", {
                     "default": False,
-                    "tooltip": "是否创建提示词文件夹"
+                    "tooltip": "Whether to create prompt folder"
                 }),
                 "enable_custom_folder": ("BOOLEAN", {
                     "default": False,
-                    "tooltip": "是否使用自定义文件夹"
+                    "tooltip": "Whether to use custom folder"
                 }),
                 
                 # 日期相关
                 "date_format": ("STRING", {
                     "default": "yyyy-MM-dd", 
                     "multiline": False,
-                    "tooltip": "日期格式: yyyy年 MM月 dd日 hh时 mm分 ss秒"
+                    "tooltip": "Date format: yyyy=year MM=month dd=day hh=hour mm=minute ss=second"
                 }),
                 "include_time": ("BOOLEAN", {
                     "default": False,
-                    "tooltip": "是否在日期中包含时间"
+                    "tooltip": "Whether to include time in date"
                 }),
                 
                 # 模型信息来源选择
                 "model_source": (["auto", "manual"], {
                     "default": "auto",
-                    "tooltip": "模型信息来源：auto=从元数据/外部输入获取，manual=手动选择"
+                    "tooltip": "Model info source: auto=from metadata/external input, manual=manual selection"
                 }),
                 "manual_model_name": (folder_paths.get_filename_list("checkpoints"), {
-                    "tooltip": "手动选择模型（仅在model_source=manual时生效）"
+                    "tooltip": "Manual model selection (only effective when model_source=manual)"
                 }),
                 "model_input": ("MODEL", {
-                    "tooltip": "从模型加载器节点输入（仅在model_source=auto时生效）"
+                    "tooltip": "Input from model loader node (only effective when model_source=auto)"
                 }),
                 
                 # 种子信息
                 "seed": ("STRING", {
                     "default": "0", 
                     "multiline": False,
-                    "tooltip": "种子值（手动输入或连接外部节点）"
+                    "tooltip": "Seed value (manual input or connect external node)"
                 }),
                 
                 # 提示词信息
                 "positive_prompt": ("STRING", {
                     "default": "", 
                     "multiline": True,
-                    "tooltip": "正向提示词（手动输入或连接外部节点）"
+                    "tooltip": "Positive prompt (manual input or connect external node)"
                 }),
                 "negative_prompt": ("STRING", {
                     "default": "", 
                     "multiline": True,
-                    "tooltip": "负向提示词（手动输入或连接外部节点）"
+                    "tooltip": "Negative prompt (manual input or connect external node)"
                 }),
                 
                 # 自定义路径
                 "custom_subfolder": ("STRING", {
                     "default": "", 
                     "multiline": False,
-                    "tooltip": "自定义子文件夹名称"
+                    "tooltip": "Custom subfolder name"
                 }),
                 
                 # 显示选项
                 "model_short_name": ("BOOLEAN", {
                     "default": True,
-                    "tooltip": "使用模型短名称（去除扩展名）"
+                    "tooltip": "Use model short name (remove extension)"
                 }),
                 "prompt_max_length": ("INT", {
                     "default": 50, 
                     "min": 10, 
                     "max": 200,
-                    "tooltip": "提示词文件夹名最大长度"
+                    "tooltip": "Maximum length for prompt folder name"
                 }),
                 "sanitize_names": ("BOOLEAN", {
                     "default": True,
-                    "tooltip": "清理文件名中的非法字符"
+                    "tooltip": "Clean illegal characters in filenames"
                 }),
             },
             "hidden": {

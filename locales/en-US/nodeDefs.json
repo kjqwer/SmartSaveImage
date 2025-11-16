@@ -1,0 +1,59 @@
+{
+  "SmartFolderManager": {
+    "title": "Smart Folder Manager",
+    "inputs": {
+      "images": "Input images for extracting size info and passing to save node",
+      "base_folder": "Base folder path, can be relative or absolute path",
+      "create_subfolders": "Whether to automatically create subfolders",
+      "enable_date_folder": "Whether to create date folder",
+      "enable_model_folder": "Whether to create model folder",
+      "enable_seed_folder": "Whether to create seed folder",
+      "enable_prompt_folder": "Whether to create prompt folder",
+      "enable_custom_folder": "Whether to use custom folder",
+      "date_format": "Date format: yyyy=year MM=month dd=day hh=hour mm=minute ss=second",
+      "include_time": "Whether to include time in date",
+      "model_source": "Model info source: auto=from metadata/external input, manual=manual selection",
+      "manual_model_name": "Manual model selection (only effective when model_source=manual)",
+      "model_input": "Input from model loader node (only effective when model_source=auto)",
+      "seed": "Seed value (manual input or connect external node)",
+      "positive_prompt": "Positive prompt (manual input or connect external node)",
+      "negative_prompt": "Negative prompt (manual input or connect external node)",
+      "custom_subfolder": "Custom subfolder name",
+      "model_short_name": "Use model short name (remove extension)",
+      "prompt_max_length": "Maximum length for prompt folder name",
+      "sanitize_names": "Clean illegal characters in filenames"
+    },
+    "outputs": {
+      "images": "Passed image data",
+      "folder_path": "Generated folder path",
+      "metadata_json": "Extracted metadata JSON"
+    }
+  },
+  "SmartImageSaver": {
+    "title": "Smart Image Saver",
+    "inputs": {
+      "images": "Images to save (usually from SmartFolderManager)",
+      "folder_path": "Save path (from SmartFolderManager)",
+      "metadata_json": "Metadata JSON (from SmartFolderManager)",
+      "filename_prefix": "Filename prefix",
+      "file_format": "Image format",
+      "preview_mode": "Save mode",
+      "add_timestamp": "Add timestamp to filename",
+      "add_counter": "Add counter (for multiple images)",
+      "counter_start": "Counter start value",
+      "counter_padding": "Counter padding (zero-fill)",
+      "jpeg_quality": "JPEG quality (1-100)",
+      "webp_quality": "WebP quality (1-100)",
+      "webp_lossless": "WebP lossless compression",
+      "png_compression": "PNG compression level (0-9)",
+      "embed_metadata": "Embed metadata into image",
+      "embed_workflow": "Embed workflow information",
+      "overwrite_existing": "Overwrite existing files",
+      "create_backup": "Create backup for overwritten files",
+      "optimize_size": "Optimize file size"
+    },
+    "outputs": {
+      "images": "Saved images"
+    }
+  }
+}

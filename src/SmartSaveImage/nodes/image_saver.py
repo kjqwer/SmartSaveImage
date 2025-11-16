@@ -28,52 +28,52 @@ class SmartImageSaver:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "images": ("IMAGE", {"tooltip": "要保存的图片（通常来自SmartFolderManager）"}),
+                "images": ("IMAGE", {"tooltip": "Images to save (usually from SmartFolderManager)"}),
                 "folder_path": ("STRING", {
                     "default": "", 
                     "multiline": False,
-                    "tooltip": "保存路径（来自SmartFolderManager）"
+                    "tooltip": "Save path (from SmartFolderManager)"
                 }),
                 "metadata_json": ("STRING", {
                     "default": "", 
                     "multiline": True,
-                    "tooltip": "元数据JSON（来自SmartFolderManager）"
+                    "tooltip": "Metadata JSON (from SmartFolderManager)"
                 }),
                 "filename_prefix": ("STRING", {
                     "default": "image", 
                     "multiline": False,
-                    "tooltip": "文件名前缀"
+                    "tooltip": "Filename prefix"
                 }),
                 "file_format": (["png", "jpeg", "webp", "bmp", "tiff"], {
                     "default": "png",
-                    "tooltip": "图片格式"
+                    "tooltip": "Image format"
                 }),
                 "preview_mode": (["save_and_preview", "preview_only", "save_only"], {
                     "default": "save_and_preview",
-                    "tooltip": "保存模式"
+                    "tooltip": "Save mode"
                 }),
             },
             "optional": {
                 # 文件名选项
                 "add_timestamp": ("BOOLEAN", {
                     "default": False,
-                    "tooltip": "在文件名中添加时间戳"
+                    "tooltip": "Add timestamp to filename"
                 }),
                 "add_counter": ("BOOLEAN", {
                     "default": True,
-                    "tooltip": "添加计数器（批量保存时）"
+                    "tooltip": "Add counter (for multiple images)"
                 }),
                 "counter_start": ("INT", {
                     "default": 1, 
                     "min": 0, 
                     "max": 99999,
-                    "tooltip": "计数器起始值"
+                    "tooltip": "Counter start value"
                 }),
                 "counter_padding": ("INT", {
                     "default": 4, 
                     "min": 1, 
                     "max": 10,
-                    "tooltip": "计数器位数（补零）"
+                    "tooltip": "Counter padding (zero-fill)"
                 }),
                 
                 # 图片质量选项
@@ -81,47 +81,47 @@ class SmartImageSaver:
                     "default": 95, 
                     "min": 1, 
                     "max": 100,
-                    "tooltip": "JPEG质量（1-100）"
+                    "tooltip": "JPEG quality (1-100)"
                 }),
                 "webp_quality": ("INT", {
                     "default": 90, 
                     "min": 1, 
                     "max": 100,
-                    "tooltip": "WebP质量（1-100）"
+                    "tooltip": "WebP quality (1-100)"
                 }),
                 "webp_lossless": ("BOOLEAN", {
                     "default": False,
-                    "tooltip": "WebP无损压缩"
+                    "tooltip": "WebP lossless compression"
                 }),
                 "png_compression": ("INT", {
                     "default": 6, 
                     "min": 0, 
                     "max": 9,
-                    "tooltip": "PNG压缩级别（0-9）"
+                    "tooltip": "PNG compression level (0-9)"
                 }),
                 
                 # 元数据选项
                 "embed_metadata": ("BOOLEAN", {
                     "default": True,
-                    "tooltip": "嵌入元数据到图片"
+                    "tooltip": "Embed metadata into image"
                 }),
                 "embed_workflow": ("BOOLEAN", {
-                    "default": False,
-                    "tooltip": "嵌入工作流信息"
+                    "default": True,
+                    "tooltip": "Embed workflow information"
                 }),
                 
                 # 高级选项
                 "overwrite_existing": ("BOOLEAN", {
                     "default": False,
-                    "tooltip": "覆盖已存在的文件"
+                    "tooltip": "Overwrite existing files"
                 }),
                 "create_backup": ("BOOLEAN", {
                     "default": False,
-                    "tooltip": "为覆盖的文件创建备份"
+                    "tooltip": "Create backup for overwritten files"
                 }),
                 "optimize_size": ("BOOLEAN", {
                     "default": False,
-                    "tooltip": "优化文件大小"
+                    "tooltip": "Optimize file size"
                 }),
             },
             "hidden": {

@@ -10,8 +10,8 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "SmartFolderManager": "智能文件夹管理",
-    "SmartImageSaver": "智能图片保存",
+    "SmartFolderManager": "SmartFolderManager",
+    "SmartImageSaver": "SmartImageSaver",
 }
 
 __all__ = [

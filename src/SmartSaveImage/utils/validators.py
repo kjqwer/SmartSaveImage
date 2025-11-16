@@ -9,8 +9,8 @@ class InputValidator:
     """输入验证器"""
     
     @staticmethod
-    def validate_folder_path(path: str) -> bool:
-        """验证文件夹路径是否有效"""
+    def validate_folder_path(path: str, allowed_base_paths: list = None) -> bool:
+        """验证文件夹路径是否有效且安全"""
         if not path:
             return False
         
@@ -23,7 +23,52 @@ class InputValidator:
         if re.search(illegal_chars, path):
             return False
         
+        # 检查路径遍历攻击
+        if '..' in path or path.startswith('/') or '~' in path:
+            return False
+            
         return True
+    
+    @staticmethod
+    def secure_path_join(base_path: str, user_path: str = "") -> str:
+        """安全地连接路径，防止路径遍历攻击 - 使用GitHub建议的方法"""
+        import folder_paths
+        
+        # 获取ComfyUI的输出目录作为安全基础路径
+        safe_base = folder_paths.get_output_directory()
+        
+        try:
+            # 使用realpath解析安全基础路径
+            resolved_safe_base = os.path.realpath(safe_base)
+            
+            # 处理base_path
+            if os.path.isabs(base_path):
+                # 绝对路径：直接解析
+                candidate_path = os.path.realpath(base_path)
+            else:
+                # 相对路径：相对于安全基础路径
+                candidate_path = os.path.realpath(os.path.join(safe_base, base_path))
+            
+            # 如果有用户路径，继续连接
+            if user_path:
+                candidate_path = os.path.realpath(os.path.join(candidate_path, user_path))
+            
+            # 使用commonpath确保路径在安全范围内
+            try:
+                common = os.path.commonpath([resolved_safe_base, candidate_path])
+                # 检查公共路径是否就是安全基础路径
+                if os.path.realpath(common) == resolved_safe_base:
+                    return candidate_path
+                else:
+                    # 路径逃逸，返回安全基础路径
+                    return resolved_safe_base
+            except ValueError:
+                # commonpath失败（通常是不同驱动器），返回安全基础路径
+                return resolved_safe_base
+                
+        except (OSError, ValueError) as e:
+            # 任何路径操作失败，返回安全基础路径
+            return safe_base
     
     @staticmethod
     def validate_filename(filename: str) -> bool:

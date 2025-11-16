@@ -24,11 +24,18 @@ class PathManager:
         }
     
     def sanitize_filename(self, name: str, max_length: int = 100) -> str:
-        """清理文件名，移除非法字符"""
+        """安全地清理文件名，移除非法字符和路径遍历攻击"""
         if not name:
             return "untitled"
         
         name = str(name)
+        
+        # 使用os.path.basename确保只获取文件名部分，防止路径遍历
+        name = os.path.basename(name)
+        
+        # 如果basename后为空（比如输入是路径分隔符），使用默认名称
+        if not name or name in ('.', '..'):
+            return "untitled"
         
         # 移除或替换非法字符
         name = re.sub(self.illegal_chars, '_', name)
@@ -40,6 +47,16 @@ class PathManager:
         
         # 移除首尾的下划线和点
         name = name.strip('_.')
+        
+        # 防止Windows保留名称
+        reserved_names = [
+            'CON', 'PRN', 'AUX', 'NUL',
+            'COM1', 'COM2', 'COM3', 'COM4', 'COM5', 'COM6', 'COM7', 'COM8', 'COM9',
+            'LPT1', 'LPT2', 'LPT3', 'LPT4', 'LPT5', 'LPT6', 'LPT7', 'LPT8', 'LPT9'
+        ]
+        name_upper = name.upper()
+        if name_upper in reserved_names or name_upper.split('.')[0] in reserved_names:
+            name = f"_{name}"
         
         # 限制长度
         if len(name) > max_length:
@@ -143,13 +160,14 @@ class PathManager:
         return [seg for seg in path_segments if seg]
     
     def resolve_base_path(self, base_folder: str, default_output_dir: str) -> str:
-        """解析基础路径"""
+        """安全地解析基础路径"""
+        from ..utils.validators import InputValidator
+        
         if not base_folder or base_folder.lower() in ["", "output", "."]:
             return default_output_dir
-        elif os.path.isabs(base_folder):
-            return base_folder
-        else:
-            return os.path.join(default_output_dir, base_folder)
+        
+        # 使用安全的路径连接方法
+        return InputValidator.secure_path_join(base_folder, "")
     
     def build_full_path(self, base_folder: str, structure_mode: str, 
                        metadata: Dict[str, Any], user_inputs: Dict[str, Any],
