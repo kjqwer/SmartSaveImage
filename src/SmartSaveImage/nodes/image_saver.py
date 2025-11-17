@@ -17,6 +17,11 @@ class SmartImageSaver:
     RETURN_TYPES = ("IMAGE",)
     RETURN_NAMES = ("images",)
     FUNCTION = "save_images"
+    
+    # 为翻译插件提供类名标识
+    @classmethod
+    def get_comfy_class(cls):
+        return "SmartImageSaver"
 
     def __init__(self):
         self.metadata_builder = MetadataBuilder()

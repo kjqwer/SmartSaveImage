@@ -13,6 +13,11 @@ class SmartFolderManager:
     RETURN_TYPES = ("IMAGE", "STRING", "STRING")
     RETURN_NAMES = ("images", "folder_path", "metadata_json")
     FUNCTION = "generate_path"
+    
+    # 为翻译插件提供类名标识
+    @classmethod
+    def get_comfy_class(cls):
+        return "SmartFolderManager"
 
     def __init__(self):
         self.metadata_extractor = MetadataExtractor()
