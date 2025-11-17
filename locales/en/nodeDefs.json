@@ -15,16 +15,25 @@
         "name": "Create Subfolders",
         "tooltip": "Whether to automatically create subfolders"
       },
-      "folder_structure": {
-        "name": "Folder Structure",
-        "tooltip": "Choose folder organization method",
-        "options": {
-          "date_only": "Date Only",
-          "model_only": "Model Only",
-          "date_model": "Date + Model",
-          "model_date": "Model + Date",
-          "custom": "Custom"
-        }
+      "enable_date_folder": {
+        "name": "Enable Date Folder",
+        "tooltip": "Whether to create date folder"
+      },
+      "enable_model_folder": {
+        "name": "Enable Model Folder",
+        "tooltip": "Whether to create model folder"
+      },
+      "enable_seed_folder": {
+        "name": "Enable Seed Folder",
+        "tooltip": "Whether to create seed folder"
+      },
+      "enable_prompt_folder": {
+        "name": "Enable Prompt Folder",
+        "tooltip": "Whether to create prompt folder"
+      },
+      "enable_custom_folder": {
+        "name": "Enable Custom Folder",
+        "tooltip": "Whether to use custom folder"
       },
       "date_format": {
         "name": "Date Format",
@@ -173,6 +182,18 @@
       "embed_workflow": {
         "name": "Embed Workflow",
         "tooltip": "Embed workflow information"
+      },
+      "overwrite_existing": {
+        "name": "Overwrite Existing",
+        "tooltip": "Overwrite existing files"
+      },
+      "create_backup": {
+        "name": "Create Backup",
+        "tooltip": "Create backup for overwritten files"
+      },
+      "optimize_size": {
+        "name": "Optimize Size",
+        "tooltip": "Optimize file size"
       }
     },
     "outputs": {

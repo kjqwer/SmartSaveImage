@@ -15,16 +15,25 @@
         "name": "创建子文件夹",
         "tooltip": "是否自动创建子文件夹"
       },
-      "folder_structure": {
-        "name": "文件夹结构",
-        "tooltip": "选择文件夹组织方式",
-        "options": {
-          "date_only": "仅日期",
-          "model_only": "仅模型",
-          "date_model": "日期+模型",
-          "model_date": "模型+日期",
-          "custom": "自定义"
-        }
+      "enable_date_folder": {
+        "name": "启用日期文件夹",
+        "tooltip": "是否创建日期文件夹"
+      },
+      "enable_model_folder": {
+        "name": "启用模型文件夹",
+        "tooltip": "是否创建模型文件夹"
+      },
+      "enable_seed_folder": {
+        "name": "启用种子文件夹",
+        "tooltip": "是否创建种子文件夹"
+      },
+      "enable_prompt_folder": {
+        "name": "启用提示词文件夹",
+        "tooltip": "是否创建提示词文件夹"
+      },
+      "enable_custom_folder": {
+        "name": "启用自定义文件夹",
+        "tooltip": "是否使用自定义文件夹"
       },
       "date_format": {
         "name": "日期格式",
@@ -51,7 +60,7 @@
         "tooltip": "从模型加载器节点输入（仅在model_source=auto时生效）"
       },
       "seed": {
-        "name": "随机种",
+        "name": "随机种子",
         "tooltip": "种子值（手动输入或连接外部节点）"
       },
       "positive_prompt": {
@@ -173,6 +182,18 @@
       "embed_workflow": {
         "name": "嵌入工作流",
         "tooltip": "嵌入工作流信息"
+      },
+      "overwrite_existing": {
+        "name": "覆盖已存在文件",
+        "tooltip": "覆盖已存在的文件"
+      },
+      "create_backup": {
+        "name": "创建备份",
+        "tooltip": "为覆盖的文件创建备份"
+      },
+      "optimize_size": {
+        "name": "优化文件大小",
+        "tooltip": "优化文件大小"
       }
     },
     "outputs": {
