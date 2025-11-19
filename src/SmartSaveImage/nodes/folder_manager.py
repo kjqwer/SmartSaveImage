@@ -51,7 +51,7 @@ class SmartFolderManager:
                     "tooltip": "Whether to create model folder"
                 }),
                 "enable_seed_folder": ("BOOLEAN", {
-                    "default": True,
+                    "default": False,
                     "tooltip": "Whether to create seed folder"
                 }),
                 "enable_prompt_folder": ("BOOLEAN", {
@@ -136,7 +136,7 @@ class SmartFolderManager:
 
     def generate_path(self, images, base_folder, create_subfolders,
                      enable_date_folder=True, enable_model_folder=True, 
-                     enable_seed_folder=True, enable_prompt_folder=False, enable_custom_folder=False,
+                     enable_seed_folder=False, enable_prompt_folder=False, enable_custom_folder=False,
                      date_format="yyyy-MM-dd", include_time=False,
                      model_source="auto", manual_model_name=None, model_input=None,
                      seed="0", positive_prompt="", negative_prompt="",
@@ -243,11 +243,11 @@ class SmartFolderManager:
                 custom_subfolder = self.path_manager.sanitize_filename(custom_subfolder)
             path_segments.append(custom_subfolder)
         
-        # 构建最终路径
         if path_segments:
             folder_path = os.path.join(base_path, *path_segments)
         else:
             folder_path = base_path
+        folder_path = InputValidator.secure_path_join(folder_path, "")
         
         # 创建文件夹
         if create_subfolders:

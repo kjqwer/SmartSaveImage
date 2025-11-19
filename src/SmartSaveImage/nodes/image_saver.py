@@ -217,17 +217,12 @@ class SmartImageSaver:
                 print(f"[SmartImageSaver] 预览失败: {e}")
                 return {"ui": {}, "result": (images,)}
         
-        # 确定保存路径
         print(f"[SmartImageSaver] 接收到的folder_path: '{folder_path}' (类型: {type(folder_path)})")
-        if not folder_path:
-            folder_path = folder_paths.get_output_directory()
-            print(f"[SmartImageSaver] 文件夹路径为空，使用默认输出目录: {folder_path}")
-        elif not os.path.exists(folder_path):
-            print(f"[SmartImageSaver] 文件夹不存在，尝试创建: {folder_path}")
+        folder_path = InputValidator.secure_path_join(folder_path or "", "")
+        if not os.path.exists(folder_path):
             try:
                 os.makedirs(folder_path, exist_ok=True)
             except Exception as e:
-                print(f"[SmartImageSaver] 创建文件夹失败: {e}，使用默认输出目录")
                 folder_path = folder_paths.get_output_directory()
         
         # 解析元数据
@@ -277,7 +272,19 @@ class SmartImageSaver:
                     overwrite_existing
                 )
             
-            filepath = os.path.join(folder_path, filename)
+            filepath_candidate = os.path.realpath(os.path.join(folder_path, filename))
+            base_real = os.path.realpath(folder_path)
+            try:
+                if os.path.commonpath([base_real, filepath_candidate]) == base_real:
+                    filepath = filepath_candidate
+                else:
+                    name_root, name_ext = os.path.splitext(filename)
+                    safe_name = self.path_manager.sanitize_filename(os.path.basename(name_root)) + name_ext
+                    filepath = os.path.realpath(os.path.join(base_real, safe_name))
+            except ValueError:
+                name_root, name_ext = os.path.splitext(filename)
+                safe_name = self.path_manager.sanitize_filename(os.path.basename(name_root)) + name_ext
+                filepath = os.path.realpath(os.path.join(folder_paths.get_output_directory(), safe_name))
             
             # 创建备份
             if overwrite_existing and create_backup and os.path.exists(filepath):

@@ -179,11 +179,12 @@ class PathManager:
         # 构建子文件夹结构
         path_segments = self.build_folder_structure(base_path, structure_mode, metadata, user_inputs)
         
-        # 组合完整路径
         if path_segments:
-            return os.path.join(base_path, *path_segments)
+            final_path = os.path.join(base_path, *path_segments)
         else:
-            return base_path
+            final_path = base_path
+        from ..utils.validators import InputValidator
+        return InputValidator.secure_path_join(final_path, "")
     
     def ensure_directory_exists(self, path: str) -> bool:
         """确保目录存在，如果不存在则创建"""
