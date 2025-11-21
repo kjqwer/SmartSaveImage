@@ -197,26 +197,34 @@ class PathManager:
     
     def generate_unique_filename(self, directory: str, base_filename: str, 
                                extension: str, overwrite: bool = False) -> str:
-        """生成唯一的文件名（如果文件已存在且不允许覆盖）"""
         filename = f"{base_filename}{extension}"
         filepath = os.path.join(directory, filename)
-        
         if not os.path.exists(filepath) or overwrite:
             return filename
-        
-        # 生成唯一文件名
-        counter = 1
-        while True:
-            new_filename = f"{base_filename}_{counter:03d}{extension}"
-            new_filepath = os.path.join(directory, new_filename)
-            if not os.path.exists(new_filepath):
-                return new_filename
-            counter += 1
-            
-            # 防止无限循环
-            if counter > 9999:
-                break
-        
-        # 如果还是冲突，使用时间戳
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")[:17]  # 精确到毫秒
+        m = re.match(r"^(.*)_(\d+)$", base_filename)
+        if m:
+            root = m.group(1)
+            num_str = m.group(2)
+            padding = len(num_str)
+            try:
+                num = int(num_str)
+            except ValueError:
+                num = 1
+            while True:
+                num += 1
+                new_filename = f"{root}_{str(num).zfill(padding)}{extension}"
+                if not os.path.exists(os.path.join(directory, new_filename)):
+                    return new_filename
+                if num > 9999999:
+                    break
+        else:
+            counter = 1
+            while True:
+                new_filename = f"{base_filename}_{counter:03d}{extension}"
+                if not os.path.exists(os.path.join(directory, new_filename)):
+                    return new_filename
+                counter += 1
+                if counter > 9999999:
+                    break
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")[:17]
         return f"{base_filename}_{timestamp}{extension}"
